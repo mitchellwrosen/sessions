@@ -1,0 +1,43 @@
+-- This file has been generated from package.yaml by hpack version 0.15.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           sessions
+version:        0.1.0.0
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+library
+  hs-source-dirs:
+      src
+  default-extensions: ConstraintKinds DataKinds FlexibleContexts FlexibleInstances GADTs LambdaCase MultiParamTypeClasses OverloadedStrings PartialTypeSignatures ScopedTypeVariables TupleSections TypeFamilyDependencies TypeOperators
+  ghc-options: -Wall
+  build-depends:
+      base >= 4.9 && < 5
+    , bytestring
+    , cereal
+    , ghc-prim
+    , safe-exceptions
+    , stm
+    , websockets
+  exposed-modules:
+      Session
+      Session.WebSockets
+  default-language: Haskell2010
+
+executable print-session
+  main-is: PrintSessionMain.hs
+  hs-source-dirs:
+      examples
+  default-extensions: ConstraintKinds DataKinds FlexibleContexts FlexibleInstances GADTs LambdaCase MultiParamTypeClasses OverloadedStrings PartialTypeSignatures ScopedTypeVariables TupleSections TypeFamilyDependencies TypeOperators
+  ghc-options: -Wall
+  build-depends:
+      base >= 4.9 && < 5
+    , async
+    , cereal
+    , sessions
+    , websockets
+  other-modules:
+      PrintSession
+  default-language: Haskell2010

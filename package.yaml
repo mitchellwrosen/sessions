@@ -1,0 +1,42 @@
+name: sessions
+version: 0.1.0.0
+
+ghc-options: -Wall
+
+default-extensions:
+  - ConstraintKinds
+  - DataKinds
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - LambdaCase
+  - MultiParamTypeClasses
+  - OverloadedStrings
+  - PartialTypeSignatures
+  - ScopedTypeVariables
+  - TupleSections
+  - TypeFamilyDependencies
+  - TypeOperators
+
+dependencies:
+  - base >= 4.9 && < 5
+
+library:
+  source-dirs: src
+  dependencies:
+    - bytestring
+    - cereal
+    - ghc-prim
+    - safe-exceptions
+    - stm
+    - websockets
+
+executables:
+  print-session:
+    source-dirs: examples
+    main: PrintSessionMain.hs
+    dependencies:
+      - async
+      - cereal
+      - sessions
+      - websockets
