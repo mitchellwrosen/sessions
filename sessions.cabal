@@ -11,7 +11,7 @@ cabal-version:  >= 1.10
 library
   hs-source-dirs:
       src
-  default-extensions: ConstraintKinds DataKinds FlexibleContexts FlexibleInstances GADTs LambdaCase MultiParamTypeClasses OverloadedStrings PartialTypeSignatures ScopedTypeVariables TupleSections TypeFamilyDependencies TypeOperators
+  default-extensions: ConstraintKinds DataKinds FlexibleContexts FlexibleInstances GADTs LambdaCase MultiParamTypeClasses OverloadedStrings PartialTypeSignatures PolyKinds ScopedTypeVariables TupleSections TypeFamilies TypeOperators
   ghc-options: -Wall
   build-depends:
       base >= 4.9 && < 5
@@ -30,7 +30,7 @@ executable print-session
   main-is: PrintSessionMain.hs
   hs-source-dirs:
       examples
-  default-extensions: ConstraintKinds DataKinds FlexibleContexts FlexibleInstances GADTs LambdaCase MultiParamTypeClasses OverloadedStrings PartialTypeSignatures ScopedTypeVariables TupleSections TypeFamilyDependencies TypeOperators
+  default-extensions: ConstraintKinds DataKinds FlexibleContexts FlexibleInstances GADTs LambdaCase MultiParamTypeClasses OverloadedStrings PartialTypeSignatures PolyKinds ScopedTypeVariables TupleSections TypeFamilies TypeOperators
   ghc-options: -Wall
   build-depends:
       base >= 4.9 && < 5

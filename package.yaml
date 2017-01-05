@@ -13,9 +13,10 @@ default-extensions:
   - MultiParamTypeClasses
   - OverloadedStrings
   - PartialTypeSignatures
+  - PolyKinds
   - ScopedTypeVariables
   - TupleSections
-  - TypeFamilyDependencies
+  - TypeFamilies
   - TypeOperators
 
 dependencies:

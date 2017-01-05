@@ -26,13 +26,11 @@ runWebSocketsSession conn s = do
     SEnter  -> pure ()
     SZero   -> pure ()
     SSucc   -> pure ()
-    SPickL  -> sendBytes conn True
-    SPickR  -> sendBytes conn False
+    SPick e -> sendBytes conn (elemToInt e)
 
-    SOffer s1 s2 ->
-      recvBytes conn >>= \case
-        True  -> go s1
-        False -> go s2
+    SOffer ss -> do
+      n <- recvBytes conn
+      go (sessionListIx (unsafeIntToElem n) ss)
 
     SPure x -> pure x
 

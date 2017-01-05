@@ -35,7 +35,7 @@ lift = sessionLift
 --------------------------------------------------------------------------------
 -- Print server
 
-type ServerProtocol = 'Offer 'Done ('Recv String ('Var 'Z))
+type ServerProtocol = 'Offer '[ 'Done, 'Recv String ('Var 'Z) ]
 
 server :: Session '[] _ ('Rec ServerProtocol) 'Done Serialize IO ()
 server = do
@@ -56,21 +56,21 @@ server = do
 --------------------------------------------------------------------------------
 -- Print client
 
-type ClientProtocol = 'Pick 'Done ('Send String ('Var 'Z))
+type ClientProtocol = 'Pick '[ 'Done, 'Send String ('Var 'Z) ]
 
 client :: Session '[] _ ('Rec ClientProtocol) 'Done Serialize IO ()
 client = do
   enter
 
-  pickR
+  pick1
   send "hello"
   vz
 
-  pickR
+  pick1
   send "world"
   vz
 
-  pickL
+  pick0
 
 
 --------------------------------------------------------------------------------
