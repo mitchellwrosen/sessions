@@ -42,9 +42,8 @@ module Session
   , pick7
   , pick8
   , pick9
-  , enter
-  , vz
-  , vs
+  , label
+  , goto
   ) where
 
 import GHC.Exts (Constraint)
@@ -60,16 +59,16 @@ data Ty where
   Recv  :: a -> Ty -> Ty
   Offer :: [Ty] -> Ty
   Pick  :: [Ty] -> Ty
-  Rec   :: Ty -> Ty
-  Var   :: Nat -> Ty
+  Label :: a -> Ty -> Ty
+  Goto  :: a -> Ty
   Done  :: Ty
 
 class Top a
 instance Top a
 
 data Session
-       (e  :: [Ty])
-       (e' :: [Ty])
+       (e  :: [(l, Ty)])
+       (e' :: [(l, Ty)])
        (r  :: Ty)
        (r' :: Ty)
        (c  :: * -> Constraint)
@@ -78,11 +77,10 @@ data Session
      where
   SSend  :: c a => a -> Session e e ('Send a r) r c m ()
   SRecv  :: c a => Session e e ('Recv a r) r c m a
-  SEnter :: Session e (r ': e) ('Rec r) r c m ()
-  SZero  :: Session (r ': e) (r ': e) ('Var 'Z) r c m ()
-  SSucc  :: Session (r ': e) e ('Var ('S n)) ('Var n) c m ()
   SPick  :: Elem r rs -> Session e e ('Pick rs) r c m ()
   SOffer :: SessionList e e' s c m a rs -> Session e e' ('Offer rs) s c m a
+  SLabel :: Session e ('(l, r) ': e) ('Label l r) r c m ()
+  SGoto  :: Labeled e e' l r => Session e e' ('Goto l) r c m ()
 
   SPure  :: a -> Session e e r r c m a
   SLift  :: m a -> Session e e r r c m a
@@ -90,9 +88,13 @@ data Session
          -> (a -> Session e' e'' r' r'' c m b)
          -> Session e e'' r r'' c m b
 
+class Labeled e e' l r | l r e -> e', l e -> r where
+instance {-# OVERLAPPING #-} Labeled ('(l, r) ': e) ('(l, r) ': e) l r
+instance Labeled e e' l r => Labeled (x ': e) e' l r
+
 data SessionList
-       (e :: [Ty])
-       (e' :: [Ty])
+       (e :: [(l, Ty)])
+       (e' :: [(l, Ty)])
        (s  :: Ty)
        (c  :: * -> Constraint)
        (m  :: * -> *)
@@ -303,24 +305,21 @@ pick8 = pick_ (There (There (There (There (There (There (There (There Here))))))
 pick9 :: Session e e ('Pick (q ': r ': s ': t ': u ': v ': w ': x ': y ': z ': zs)) z c m ()
 pick9 = pick_ (There (There (There (There (There (There (There (There (There Here)))))))))
 
-enter :: Session e (r ': e) ('Rec r) r c m ()
-enter = SEnter
+label :: a -> Session e ('(l, r) ': e) ('Label l r) r c m ()
+label _ = SLabel
 
-vz :: Session (r ': e) (r ': e) ('Var 'Z) r c m ()
-vz = SZero
-
-vs :: Session (r ': e) e ('Var ('S n)) ('Var n) c m ()
-vs = SSucc
+goto :: Labeled e e' l r => a -> Session e e' ('Goto l) r c m ()
+goto _ = SGoto
 
 type family IsDual (r :: Ty) (s :: Ty) :: Constraint where
-  IsDual ('Send a r) ('Recv a s) = IsDual r s
-  IsDual ('Recv a r) ('Send a s) = IsDual r s
-  IsDual ('Offer rs) ('Pick ss)  = MapIsDual rs ss
-  IsDual ('Pick rs)  ('Offer ss) = MapIsDual rs ss
-  IsDual ('Rec r)    ('Rec s)    = IsDual r s
-  IsDual ('Var n)    ('Var n)    = ()
-  IsDual 'Done       'Done       = ()
-  IsDual r           s           = NotDual r s
+  IsDual ('Send a r)  ('Recv a s)    = IsDual r s
+  IsDual ('Recv a r)  ('Send a s)    = IsDual r s
+  IsDual ('Offer rs)  ('Pick ss)     = MapIsDual rs ss
+  IsDual ('Pick rs)   ('Offer ss)    = MapIsDual rs ss
+  IsDual ('Label l r) ('Label l s) = IsDual r s
+  IsDual ('Goto l)    ('Goto l)      = ()
+  IsDual 'Done        'Done          = ()
+  IsDual r            s              = NotDual r s
 
 type family MapIsDual (rs :: [Ty]) (ss :: [Ty]) :: Constraint where
   MapIsDual rs ss = MapIsDual' rs ss rs ss

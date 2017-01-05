@@ -10,6 +10,9 @@ import Data.Serialize (Serialize)
 import Data.String
 import Prelude hiding ((>>=), (>>), return)
 
+
+data Main = Main
+
 --------------------------------------------------------------------------------
 -- Rebound syntax
 
@@ -35,40 +38,41 @@ lift = sessionLift
 --------------------------------------------------------------------------------
 -- Print server
 
-type ServerProtocol = 'Offer '[ 'Done, 'Recv String ('Var 'Z) ]
+type ServerProtocol
+  = 'Label Main ('Offer '[ 'Done, 'Recv String ('Goto Main) ])
 
-server :: Session '[] _ ('Rec ServerProtocol) 'Done Serialize IO ()
+server :: Session '[] _ ServerProtocol 'Done Serialize IO ()
 server = do
-  enter
+  label Main
   loop
  where
-  loop :: Session '[ServerProtocol] _ ServerProtocol 'Done Serialize IO ()
   loop =
     offer
       (return ())
       (do
         s <- recv
         lift (putStrLn s)
-        vz
+        goto Main
         loop)
 
 
 --------------------------------------------------------------------------------
 -- Print client
 
-type ClientProtocol = 'Pick '[ 'Done, 'Send String ('Var 'Z) ]
+type ClientProtocol
+  = 'Label Main ('Pick '[ 'Done, 'Send String ('Goto Main) ])
 
-client :: Session '[] _ ('Rec ClientProtocol) 'Done Serialize IO ()
+client :: Session '[] _ ClientProtocol 'Done Serialize IO ()
 client = do
-  enter
+  label Main
 
   pick1
   send "hello"
-  vz
+  goto Main
 
   pick1
   send "world"
-  vz
+  goto Main
 
   pick0
 

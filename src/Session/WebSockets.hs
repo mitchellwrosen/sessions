@@ -23,9 +23,8 @@ runWebSocketsSession conn s = do
   go = \case
     SSend x -> sendBytes conn x
     SRecv   -> recvBytes conn
-    SEnter  -> pure ()
-    SZero   -> pure ()
-    SSucc   -> pure ()
+    SLabel  -> pure ()
+    SGoto   -> pure ()
     SPick e -> sendBytes conn (elemToInt e)
 
     SOffer ss -> do

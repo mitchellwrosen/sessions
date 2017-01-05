@@ -8,6 +8,7 @@ default-extensions:
   - DataKinds
   - FlexibleContexts
   - FlexibleInstances
+  - FunctionalDependencies
   - GADTs
   - LambdaCase
   - MultiParamTypeClasses
@@ -16,6 +17,7 @@ default-extensions:
   - PolyKinds
   - ScopedTypeVariables
   - TupleSections
+  - TypeApplications
   - TypeFamilies
   - TypeOperators
 
